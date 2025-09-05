@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Carteirinha Iparlej</title>
+  <link rel="icon" href="icon_gdf.png" type="image/png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 1200px;
+      background: linear-gradient(135deg, #004b96 0%, #ffffff 100%);
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 20px rgba(0, 77, 153, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .header img {
+      height: 70px;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .header h2 {
+      font-size: 2.2em;
+      font-weight: 600;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .main-container {
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid #e0e0e0;
+    }
+
+    #login-container label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      text-align: left;
+    }
+
+    #login-container input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    #login-container input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    #login-container button {
+      width: 100%;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    }
+
+    #login-container button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+    }
+
+    #app-container {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      border: 1px solid #e0e0e0;
+    }
+
+    .controls {
+      margin-bottom: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .controls label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .controls input[type="text"],
+    .controls input[type="date"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .controls input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    button#btnAtualizar {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+    }
+
+    button#btnBaixar {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    button:disabled {
+      background: #cccccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .card-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #cardCanvas, #backCardCanvas {
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      padding: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .header h2 {
+        font-size: 1.8em;
+      }
+      
+      .header-content {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .controls {
+        grid-template-columns: 1fr;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      #cardCanvas,
+      #backCardCanvas {
+        width: 100%;
+        max-width: 502px;
+        height: auto;
+        object-fit: cover;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-content">
+      <img src="logogdfsaude.png" alt="Logo GDF Saúde">
+      <h2>Gerador de Carteirinha Iparlej</h2>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div id="login-container">
+      <label>Usuário:
+        <input type="text" id="username" value="user">
+      </label>
+      <label>Senha:
+        <input type="password" id="password" value="pass">
+      </label>
+      <button id="loginButton">Entrar</button>
+    </div>
+
+    <div id="app-container">
+      <div class="controls">
+        <label>1. Número da carteirinha:
+          <input id="inputNumero" type="text" value="00000500.00-3" placeholder="Ex: 00000500.00-3">
+        </label>
+
+        <label>2. Nome do titular:
+          <input id="inputNome" type="text" value="Nome do Beneficiario">
+        </label>
+
+        <label>3. Data de Nascimento:
+          <input id="inputData" type="date" value="2022-09-05">
+        </label>
+      </div>
+
+      <div class="button-group">
+        <button id="btnAtualizar">🔄 Atualizar Carteirinha</button>
+        <button id="btnBaixar">📥 Baixar Carteirinha</button>
+      </div>
+
+      <div class="card-preview">
+        <canvas id="cardCanvas" width="502" height="326"></canvas>
+        <canvas id="backCardCanvas" width="502" height="326"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Versão Beta 0.1.0</p>
+  </div>
+
+  <script>
+    // Login credentials
+    const correctUsername = "rafael"; // CHANGE THIS TO YOUR DESIRED USERNAME
+    const correctPassword = "123"; // CHANGE THIS TO YOUR DESIRED PASSWORD
+
+    const loginContainer = document.getElementById('login-container');
+    const appContainer = document.getElementById('app-container');
+    const loginButton = document.getElementById('loginButton');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    function checkLogin() {
+      const usernameVal = usernameInput.value;
+      const passwordVal = passwordInput.value;
+
+      if (usernameVal === correctUsername && passwordVal === correctPassword) {
+        loginContainer.style.display = 'none';
+        appContainer.style.display = 'block';
+        checkImagesLoaded();
+      } else {
+        alert("Usuário ou senha incorretos. Tente novamente.");
+      }
+    }
+
+    loginButton.addEventListener('click', checkLogin);
+
+    // Adiciona o evento de keydown para os campos de usuário e senha
+    usernameInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { // Usa event.key para modernidade
+        checkLogin();
+      }
+    });
+
+    passwordInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') { // Usa event.key para modernidade
+        checkLogin();
+      }
+    });
+
+    const CARD_WIDTH = 502;
+    const CARD_HEIGHT = 326;
+
+    const canvas = document.getElementById('cardCanvas');
+    const ctx    = canvas.getContext('2d');
+    const imgFront = document.createElement('img');
+    imgFront.src   = 'imagem vazia.png';
+
+    const backCanvas = document.getElementById('backCardCanvas');
+    const backCtx = backCanvas.getContext('2d');
+    const imgBack = document.createElement('img');
+    imgBack.src = 'imagem a baixo.png';
+
+    const segmentacaoText = "Ambulatorial + hospitalar com obstetrícia";
+    const validadeText = "CONFORME REGULAMENTADO";
+
+    let frontImageLoaded = false;
+    let backImageLoaded = false;
+
+    function checkImagesLoaded() {
+      if (frontImageLoaded && backImageLoaded) {
+        if (appContainer.style.display === 'block') {
+          document.getElementById('btnAtualizar').disabled = false;
+          document.getElementById('btnBaixar').disabled    = false;
+          drawCard();
+        }
+      }
+    }
+
+    imgFront.onload = () => {
+      frontImageLoaded = true;
+      checkImagesLoaded();
+    };
+
+    imgBack.onload = () => {
+        backImageLoaded = true;
+        checkImagesLoaded();
+    };
+
+    document.getElementById('btnAtualizar').disabled = true;
+    document.getElementById('btnBaixar').disabled    = true;
+
+    function validateInputs() {
+        const inputNumero = document.getElementById('inputNumero');
+        const inputNome = document.getElementById('inputNome');
+        const inputData = document.getElementById('inputData');
+
+        // Remover espaços em branco antes e depois
+        inputNumero.value = inputNumero.value.trim();
+        inputNome.value = inputNome.value.trim();
+        inputData.value = inputData.value.trim();
+
+        // 1. Não permitir nome vazio
+        if (inputNome.value.length === 0) {
+            alert("Erro: O 'Nome do titular' não pode estar vazio.");
+            return false;
+        }
+
+        // 2. Não permitir número de carteirinha vazio
+        if (inputNumero.value.length === 0) {
+            alert("Erro: O 'Número da carteirinha' não pode estar vazio.");
+            return false;
+        }
+
+        // 3. Não permitir letras ou caracteres especiais no número da carteirinha, apenas números, traços e pontos
+        const numeroRegex = /^[\d.-]+$/; // Expressão regular para apenas dígitos, traços e pontos
+        if (!numeroRegex.test(inputNumero.value)) {
+            alert("Erro: O 'Número da carteirinha' deve conter apenas números, traços e pontos, sem espaços ou outros caracteres.");
+            return false;
+        }
+
+        // Não permitir espaços no meio do número da carteirinha
+        if (inputNumero.value.includes(' ')) {
+            alert("Erro: O 'Número da carteirinha' não pode conter espaços.");
+            return false;
+        }
+
+        // Não permitir numero de carteirinha abaixo de 8 dígitos (contando apenas os números, excluindo traços e pontos)
+        const digitosApenas = inputNumero.value.replace(/[-.]/g, '');
+        if (digitosApenas.length < 8) {
+            alert("Erro: O 'Número da carteirinha' deve ter pelo menos 8 dígitos.");
+            return false;
+        }
+
+        // Garantir que uma data de início do plano válida foi selecionada
+        if (!inputData.value) {
+            alert("Erro: Por favor, selecione uma 'Data de início do plano' válida.");
+            return false;
+        }
+
+        // Validação do ano da data de início do plano (entre 2020 e 2026)
+        const ano = new Date(inputData.value).getFullYear();
+        if (ano < 1900 || ano > 2026) {
+            alert("Erro: O ano da 'Data de início do plano' deve estar entre 2020 e 2026.");
+            return false;
+        }
+
+        return true;
+    }
+
+    function drawCard() {
+      if (!validateInputs()) {
+          return;
+      }
+
+      drawFrontCard();
+      drawBackCard();
+    }
+
+    function drawFrontCard() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(imgFront, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+
+      // Nome do beneficiário - posicionado abaixo do texto principal e acima da linha verde
+      ctx.font = 'bold 18px Arial';
+      ctx.fillStyle = '#000000'; // Cor escura para o nome
+      ctx.textAlign = 'left'; // Centralizado horizontalmente
+      ctx.fillText(
+        document.getElementById('inputNome').value.toUpperCase(),
+        CARD_WIDTH / 24, 256 // Centralizado horizontalmente, posição Y ajustada
+      );
+
+      // Código do beneficiário - posicionado abaixo da linha verde
+      ctx.font = 'bold 18px Arial';
+      ctx.fillStyle = '#000000';
+      ctx.textAlign = 'left';
+      ctx.fillText(
+        document.getElementById('inputNumero').value,
+        325, 305
+      );
+    }
+
+    function drawBackCard() {
+      backCtx.clearRect(0, 0, backCanvas.width, backCanvas.height);
+      backCtx.drawImage(imgBack, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+
+      // Data de nascimento
+      backCtx.font = 'bold 22px Arial';
+      backCtx.fillStyle = '#000000';
+      backCtx.textAlign = 'left';
+      const raw = document.getElementById('inputData').value;
+      const fmt = raw ? raw.split('-').reverse().join('/') : '  /  /    ';
+      backCtx.fillText(fmt, 55, 190);
+
+      // Validade (sempre "Indeterminada")
+      backCtx.font = 'bold 22px Arial';
+      backCtx.fillText("Indeterminada", 315, 190);
+    }
+
+    function downloadCard() {
+      if (!validateInputs()) {
+          return;
+      }
+
+      drawCard();
+
+      const combinedCanvas = document.createElement('canvas');
+      combinedCanvas.width = CARD_WIDTH;
+      combinedCanvas.height = CARD_HEIGHT + CARD_HEIGHT + 20; // Frente + verso + espaço
+
+      const combinedCtx = combinedCanvas.getContext('2d');
+
+      // Desenhar frente (canvas modificado)
+      combinedCtx.drawImage(canvas, 0, 0, CARD_WIDTH, CARD_HEIGHT);
+      
+      // Desenhar verso (canvas modificado)
+      combinedCtx.drawImage(backCanvas, 0, CARD_HEIGHT + 20, CARD_WIDTH, CARD_HEIGHT);
+
+      try {
+        const link = document.createElement('a');
+        const nomeDoBeneficiario = document.getElementById('inputNome').value;
+        const nomeArquivo = nomeDoBeneficiario.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+        link.download   = `carteirinha_${nomeArquivo}.png`;
+        link.href       = combinedCanvas.toDataURL('image/png');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (e) {
+        alert('Erro ao gerar o download.\nFaça um print da tela ou use o Firefox para abrir o arquivo diretamente.');
+      }
+    }
+
+    document.getElementById('btnAtualizar').onclick = drawCard;
+    document.getElementById('btnBaixar').onclick     = downloadCard;
+  </script>
+</body>
+</html>
