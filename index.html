@@ -485,39 +485,59 @@
       backCtx.fillText("Indeterminada", 315, 190);
     }
 
-    function downloadCard() {
+    function downloadFrontCard() {
       if (!validateInputs()) {
           return;
       }
 
       drawCard();
 
-      const combinedCanvas = document.createElement('canvas');
-      combinedCanvas.width = CARD_WIDTH;
-      combinedCanvas.height = CARD_HEIGHT + CARD_HEIGHT + 20; // Frente + verso + espaço
+      try {
+        const link = document.createElement('a');
+        const nomeDoBeneficiario = document.getElementById('inputNome').value;
+        const nomeArquivo = nomeDoBeneficiario.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
-      const combinedCtx = combinedCanvas.getContext('2d');
+        link.download = `frente_${nomeArquivo}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (e) {
+        alert('Erro ao gerar o download da frente.\nFaça um print da tela ou use o Firefox para abrir o arquivo diretamente.');
+      }
+    }
 
-      // Desenhar frente (canvas modificado)
-      combinedCtx.drawImage(canvas, 0, 0, CARD_WIDTH, CARD_HEIGHT);
-      
-      // Desenhar verso (canvas modificado)
-      combinedCtx.drawImage(backCanvas, 0, CARD_HEIGHT + 20, CARD_WIDTH, CARD_HEIGHT);
+    function downloadBackCard() {
+      if (!validateInputs()) {
+          return;
+      }
+
+      drawCard();
 
       try {
         const link = document.createElement('a');
         const nomeDoBeneficiario = document.getElementById('inputNome').value;
         const nomeArquivo = nomeDoBeneficiario.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
-        link.download   = `carteirinha_${nomeArquivo}.png`;
-        link.href       = combinedCanvas.toDataURL('image/png');
+        link.download = `verso_${nomeArquivo}.png`;
+        link.href = backCanvas.toDataURL('image/png');
         link.style.display = 'none';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
       } catch (e) {
-        alert('Erro ao gerar o download.\nFaça um print da tela ou use o Firefox para abrir o arquivo diretamente.');
+        alert('Erro ao gerar o download do verso.\nFaça um print da tela ou use o Firefox para abrir o arquivo diretamente.');
       }
+    }
+
+    function downloadCard() {
+      // Baixar frente e verso separadamente
+      downloadFrontCard();
+      // Pequeno delay para evitar conflitos de download
+      setTimeout(() => {
+        downloadBackCard();
+      }, 500);
     }
 
     document.getElementById('btnAtualizar').onclick = drawCard;
