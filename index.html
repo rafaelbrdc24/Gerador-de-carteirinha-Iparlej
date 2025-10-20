@@ -179,8 +179,13 @@
       color: white;
     }
 
-    button#btnBaixar {
+    button#btnBaixarFrente {
       background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+    }
+
+    button#btnBaixarVerso {
+      background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
       color: white;
     }
 
@@ -283,7 +288,8 @@
 
       <div class="button-group">
         <button id="btnAtualizar">🔄 Atualizar Carteirinha</button>
-        <button id="btnBaixar">📥 Baixar Carteirinha</button>
+        <button id="btnBaixarFrente">📥 Baixar Frente</button>
+        <button id="btnBaixarVerso">📥 Baixar Verso</button>
       </div>
 
       <div class="card-preview">
@@ -359,7 +365,8 @@
       if (frontImageLoaded && backImageLoaded) {
         if (appContainer.style.display === 'block') {
           document.getElementById('btnAtualizar').disabled = false;
-          document.getElementById('btnBaixar').disabled    = false;
+          document.getElementById('btnBaixarFrente').disabled = false;
+          document.getElementById('btnBaixarVerso').disabled = false;
           drawCard();
         }
       }
@@ -376,7 +383,8 @@
     };
 
     document.getElementById('btnAtualizar').disabled = true;
-    document.getElementById('btnBaixar').disabled    = true;
+    document.getElementById('btnBaixarFrente').disabled = true;
+    document.getElementById('btnBaixarVerso').disabled = true;
 
     function validateInputs() {
         const inputNumero = document.getElementById('inputNumero');
@@ -531,17 +539,9 @@
       }
     }
 
-    function downloadCard() {
-      // Baixar frente e verso separadamente
-      downloadFrontCard();
-      // Pequeno delay para evitar conflitos de download
-      setTimeout(() => {
-        downloadBackCard();
-      }, 500);
-    }
-
     document.getElementById('btnAtualizar').onclick = drawCard;
-    document.getElementById('btnBaixar').onclick     = downloadCard;
+    document.getElementById('btnBaixarFrente').onclick = downloadFrontCard;
+    document.getElementById('btnBaixarVerso').onclick = downloadBackCard;
   </script>
 </body>
 </html>
